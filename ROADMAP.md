@@ -57,8 +57,8 @@ findings to the terminal with severity labels.
 
 | Milestone | Commit message | Description |
 |-----------|---------------|-------------|
-| 2a | `feat: admin path probe` | Checks common paths (`/admin`, `/wp-admin`, `/.env`, `/swagger`, etc.) for 200/403 responses — no login attempts |
-| 2b | `feat: subdomain enumeration` | Enumerates subdomains via crt.sh certificate transparency logs — flags sensitive-looking names (staging, dev, jenkins, vpn, etc.) |
+| 2a ✓ | `feat: admin path probe` | Checks common paths (`/admin`, `/wp-admin`, `/.env`, `/swagger`, etc.) for 200/403 responses — no login attempts |
+| 2b ✓ | `feat: subdomain enumeration` | Enumerates subdomains via crt.sh certificate transparency logs — flags sensitive-looking names (staging, dev, jenkins, vpn, etc.) |
 | 2c | `feat: breach check (hibp)` | Checks domain against HaveIBeenPwned; skips gracefully if no API key is set |
 
 **Exit criteria:** All six spec checks are implemented. The tool is feature-complete
