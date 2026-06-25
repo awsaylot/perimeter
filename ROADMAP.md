@@ -76,17 +76,15 @@ The tool is feature-complete for v1.
 
 | Milestone | Commit message | Description |
 |-----------|---------------|-------------|
-| 3a | `feat: json output` | `--json` flag dumps `ScanResult` as structured JSON. This is the foundation for all downstream integrations. |
-| 3b | `feat: html report` | Jinja2 template renders Summary / Findings / Appendix. Plain-English copy, severity badges, client-ready formatting. |
-| 3c | `feat: pdf export` | Converts HTML report to PDF for client delivery (`--pdf` flag). |
+| 3a ✓ | `feat: json output` | `--json` flag dumps `ScanResult` as structured JSON. This is the foundation for all downstream integrations. |
+| 3b ✓ | `feat: html report` | Jinja2 template renders Summary / Findings / Appendix. Plain-English copy, severity badges, client-ready formatting. |
 
 **Exit criteria:** `python main.py example.com --output report.html` produces a
 client-ready report. `--json` produces clean structured output suitable for piping
 or ingestion.
 
-**Note:** JSON output (3a) comes before the HTML report (3b) deliberately — it forces
-the data model to be clean and serializable before we build any presentation layer on
-top of it.
+**Note:** PDF export was dropped — WeasyPrint requires Pango/GTK system libraries on
+Windows. Users can print to PDF from the HTML report via their browser.
 
 ---
 

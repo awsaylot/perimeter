@@ -99,6 +99,7 @@ def main() -> None:
         help="Write an HTML report to FILE (e.g. report.html)",
     )
 
+
     args = parser.parse_args()
     result = ScanResult(domain=args.domain)
 
