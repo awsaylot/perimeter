@@ -4,12 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import textwrap
 
 from perimeter.checks import (
     cookies, dns, dnssec, http, paths, robots, securitytxt, subdomains, tls, whois
 )
 from perimeter.models import ScanResult, Severity
+from perimeter.output.json_output import to_json
 
 CHECKS = [dns, dnssec, tls, http, cookies, paths, robots, subdomains, whois, securitytxt]
 
@@ -86,25 +88,29 @@ def main() -> None:
     )
     parser.add_argument("domain", help="Target domain to scan (e.g. example.com)")
     parser.add_argument(
-        "--output", "-o",
-        metavar="FILE",
-        help="Write the report to this file (default: <domain>-report.html)",
+        "--json",
+        action="store_true",
+        help="Emit results as JSON to stdout instead of terminal output",
     )
     parser.add_argument(
-        "--hibp-key",
-        metavar="KEY",
-        help="HaveIBeenPwned API key for breach check (or set HIBP_API_KEY env var)",
+        "--output", "-o",
+        metavar="FILE",
+        help="Write an HTML report to FILE (e.g. report.html)",
     )
 
     args = parser.parse_args()
     result = ScanResult(domain=args.domain)
 
-    print(f"[perimeter] scanning {result.domain}...")
+    if not args.json:
+        print(f"[perimeter] scanning {result.domain}...")
     for check_module in CHECKS:
         cr = check_module.run(args.domain)
         result.check_results.append(cr)
 
-    _print_results(result)
+    if args.json:
+        sys.stdout.write(to_json(result) + "\n")
+    else:
+        _print_results(result)
 
 
 if __name__ == "__main__":
