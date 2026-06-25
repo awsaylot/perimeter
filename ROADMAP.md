@@ -61,11 +61,11 @@ All checks use only public data — no paid API keys required.
 |-----------|---------------|-------------|
 | 2a ✓ | `feat: admin path probe` | Checks common paths (`/admin`, `/wp-admin`, `/.env`, `/swagger`, etc.) for 200/403 responses — no login attempts |
 | 2b ✓ | `feat: subdomain enumeration` | Enumerates subdomains via crt.sh certificate transparency logs — flags sensitive-looking names (staging, dev, jenkins, vpn, etc.) |
-| 2c | `feat: dnssec check` | Checks for DS / RRSIG records — missing DNSSEC leaves DNS responses open to cache poisoning and spoofing |
-| 2d | `feat: whois check` | Queries RDAP for domain expiry, registration age, and registrar privacy — flags near-expiry and suspiciously new domains |
-| 2e | `feat: robots.txt audit` | Fetches and parses robots.txt; flags Disallow entries that reveal sensitive internal paths |
-| 2f | `feat: cookie security` | Inspects Set-Cookie headers for missing Secure, HttpOnly, and SameSite flags |
-| 2g | `feat: security.txt check` | Checks for /.well-known/security.txt (RFC 9116) — absence means no public responsible-disclosure channel |
+| 2c ✓ | `feat: dnssec check` | Checks for DS / RRSIG records — missing DNSSEC leaves DNS responses open to cache poisoning and spoofing |
+| 2d ✓ | `feat: whois check` | Queries RDAP for domain expiry, registration age, and registrar privacy — flags near-expiry and suspiciously new domains |
+| 2e ✓ | `feat: robots.txt audit` | Fetches and parses robots.txt; flags Disallow entries that reveal sensitive internal paths |
+| 2f ✓ | `feat: cookie security` | Inspects Set-Cookie headers for missing Secure, HttpOnly, and SameSite flags |
+| 2g ✓ | `feat: security.txt check` | Checks for /.well-known/security.txt (RFC 9116) — absence means no public responsible-disclosure channel |
 
 **Exit criteria:** All checks are implemented using only free, public data sources.
 The tool is feature-complete for v1.
