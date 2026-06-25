@@ -6,10 +6,10 @@ from __future__ import annotations
 import argparse
 import textwrap
 
-from perimeter.checks import dns, tls
+from perimeter.checks import dns, http, tls
 from perimeter.models import ScanResult, Severity
 
-CHECKS = [dns, tls]
+CHECKS = [dns, tls, http]
 
 _COLORS = {
     Severity.HIGH:   "\033[91m",
