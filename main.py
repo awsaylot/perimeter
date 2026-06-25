@@ -3,6 +3,8 @@
 
 import argparse
 
+from perimeter.models import ScanResult
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -22,7 +24,8 @@ def main():
     )
 
     args = parser.parse_args()
-    print(f"[perimeter] target: {args.domain}")
+    result = ScanResult(domain=args.domain)
+    print(f"[perimeter] target: {result.domain}")
     print("(no checks implemented yet)")
 
 
