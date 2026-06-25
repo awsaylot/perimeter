@@ -10,9 +10,9 @@ build/
 .venv/
 venv/
 
-# Output reports
-*.html
-*.pdf
+# Output reports (root-level only — templates in perimeter/templates/ are source)
+/*.html
+/*.pdf
 
 # OS
 .DS_Store

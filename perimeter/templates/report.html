@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perimeter Report — {{ result.domain }}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #1a1a2e;
+    background: #f4f6fb;
+  }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Header */
+  .header {
+    background: #1a1a2e;
+    color: #fff;
+    border-radius: 10px;
+    padding: 32px 36px;
+    margin-bottom: 32px;
+  }
+  .header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .header .domain { font-size: 20px; color: #a0aec0; margin-top: 4px; }
+  .header .meta { font-size: 13px; color: #718096; margin-top: 12px; }
+
+  /* Summary bar */
+  .summary-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .score-card {
+    flex: 1;
+    min-width: 130px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    text-align: center;
+  }
+  .score-card .count {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .score-card .label { font-size: 12px; color: #718096; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+  .count.high   { color: #e53e3e; }
+  .count.medium { color: #d69e2e; }
+  .count.low    { color: #3182ce; }
+  .count.pass   { color: #38a169; }
+  .count.total  { color: #1a1a2e; }
+
+  /* Section headers */
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 36px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  /* Findings */
+  .finding {
+    background: #fff;
+    border-radius: 8px;
+    border-left: 4px solid #ccc;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .finding.high   { border-left-color: #e53e3e; }
+  .finding.medium { border-left-color: #d69e2e; }
+  .finding.low    { border-left-color: #3182ce; }
+  .finding.info   { border-left-color: #805ad5; }
+  .finding.pass   { border-left-color: #38a169; }
+
+  .finding-header { display: flex; align-items: flex-start; gap: 10px; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .badge.high   { background: #fff5f5; color: #c53030; }
+  .badge.medium { background: #fffff0; color: #975a16; }
+  .badge.low    { background: #ebf8ff; color: #2b6cb0; }
+  .badge.info   { background: #faf5ff; color: #553c9a; }
+  .badge.pass   { background: #f0fff4; color: #276749; }
+
+  .finding-title { font-weight: 600; font-size: 15px; color: #1a1a2e; }
+  .finding-check { font-size: 12px; color: #a0aec0; margin-top: 2px; }
+  .finding-body  { margin-top: 10px; font-size: 14px; color: #4a5568; }
+  .finding-fix {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #2d3748;
+    background: #f7fafc;
+    border-radius: 4px;
+    padding: 8px 12px;
+  }
+  .finding-fix strong { color: #1a1a2e; }
+
+  /* Check sections */
+  .check-group { margin-bottom: 8px; }
+  .check-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin: 24px 0 8px;
+  }
+
+  /* Appendix */
+  .appendix-item {
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    overflow: hidden;
+  }
+  details summary {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #2d3748;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before {
+    content: "▶";
+    font-size: 10px;
+    color: #a0aec0;
+    transition: transform .15s;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details .raw-block {
+    background: #1a1a2e;
+    color: #e2e8f0;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+    padding: 16px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 12px;
+    color: #a0aec0;
+    text-align: center;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { padding: 20px; }
+    details { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div style="font-size:13px; color:#718096; text-transform:uppercase; letter-spacing:.8px; margin-bottom:8px;">Perimeter Security Report</div>
+    <h1>{{ result.domain }}</h1>
+    <div class="meta">
+      Scanned {{ result.scanned_at.strftime("%B %d, %Y at %H:%M UTC") }}
+      &nbsp;·&nbsp; Scan ID {{ result.uuid[:8] }}
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-bar">
+    <div class="score-card">
+      <div class="count total">{{ counts.total }}</div>
+      <div class="label">Total findings</div>
+    </div>
+    {% if counts.high %}
+    <div class="score-card">
+      <div class="count high">{{ counts.high }}</div>
+      <div class="label">High</div>
+    </div>
+    {% endif %}
+    {% if counts.medium %}
+    <div class="score-card">
+      <div class="count medium">{{ counts.medium }}</div>
+      <div class="label">Medium</div>
+    </div>
+    {% endif %}
+    {% if counts.low %}
+    <div class="score-card">
+      <div class="count low">{{ counts.low }}</div>
+      <div class="label">Low</div>
+    </div>
+    {% endif %}
+    <div class="score-card">
+      <div class="count pass">{{ counts.passed }}</div>
+      <div class="label">Passed</div>
+    </div>
+  </div>
+
+  <!-- Actionable findings -->
+  {% set actionable = result.actionable_findings %}
+  {% if actionable %}
+  <h2>Findings Requiring Attention</h2>
+  {% for sev in ["high", "medium", "low"] %}
+    {% set group = actionable | selectattr("severity", "equalto", sev) | list %}
+    {% if group %}
+    {% for f in group %}
+    <div class="finding {{ sev }}">
+      <div class="finding-header">
+        <span class="badge {{ sev }}">{{ sev }}</span>
+        <div>
+          <div class="finding-title">{{ f.title }}</div>
+          <div class="finding-check">{{ f.check }}</div>
+        </div>
+      </div>
+      <div class="finding-body">{{ f.summary }}</div>
+      {% if f.fix %}
+      <div class="finding-fix"><strong>Fix:</strong> {{ f.fix }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+  {% endfor %}
+  {% else %}
+  <h2>Findings</h2>
+  <div style="background:#f0fff4; border-radius:8px; padding:20px 24px; color:#276749; font-weight:600;">
+    All checks passed. No issues found.
+  </div>
+  {% endif %}
+
+  <!-- Passing checks -->
+  {% set passing = result.all_findings | selectattr("severity", "equalto", "pass") | list %}
+  {% if passing %}
+  <h2>Passing Checks</h2>
+  {% for f in passing %}
+  <div class="finding pass">
+    <div class="finding-header">
+      <span class="badge pass">pass</span>
+      <div>
+        <div class="finding-title">{{ f.title }}</div>
+        <div class="finding-check">{{ f.check }}</div>
+      </div>
+    </div>
+    {% if f.summary %}
+    <div class="finding-body">{{ f.summary }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- Appendix -->
+  {% set has_raw = result.all_findings | selectattr("raw") | list %}
+  {% if has_raw %}
+  <h2>Appendix — Technical Detail</h2>
+  {% for cr in result.check_results %}
+    {% set cr_findings_with_raw = cr.findings | selectattr("raw") | list %}
+    {% if cr_findings_with_raw %}
+    <div class="check-name">{{ cr.check }}</div>
+    {% for f in cr_findings_with_raw %}
+    <div class="appendix-item">
+      <details>
+        <summary>{{ f.title }}</summary>
+        <div class="raw-block">{{ f.raw | tojson(indent=2) }}</div>
+      </details>
+    </div>
+    {% endfor %}
+    {% endif %}
+  {% endfor %}
+  {% endif %}
+
+  <div class="footer">
+    Generated by <strong>Perimeter</strong> — passive external exposure scanner &nbsp;·&nbsp;
+    {{ result.scanned_at.strftime("%Y-%m-%d") }}
+  </div>
+
+</div>
+</body>
+</html>

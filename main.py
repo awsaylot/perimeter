@@ -11,6 +11,7 @@ from perimeter.checks import (
     cookies, dns, dnssec, http, paths, robots, securitytxt, subdomains, tls, whois
 )
 from perimeter.models import ScanResult, Severity
+from perimeter.output.html_output import write_report
 from perimeter.output.json_output import to_json
 
 CHECKS = [dns, dnssec, tls, http, cookies, paths, robots, subdomains, whois, securitytxt]
@@ -109,6 +110,9 @@ def main() -> None:
 
     if args.json:
         sys.stdout.write(to_json(result) + "\n")
+    elif args.output:
+        write_report(result, args.output)
+        print(f"[perimeter] report written to {args.output}")
     else:
         _print_results(result)
 
