@@ -45,7 +45,7 @@ prints structured results to the terminal.
 |-----------|---------------|-------------|
 | 1a ✓ | `chore: project structure + data models` | Package layout, `Finding` / `CheckResult` / `ScanResult` dataclasses, `requirements.txt` |
 | 1b ✓ | `feat: dns check` | MX, SPF, DMARC, DKIM — flags missing records, weak DMARC policy |
-| 1c | `feat: tls check` | Cert expiry, protocol version, chain validity |
+| 1c ✓ | `feat: tls check` | Cert expiry, protocol version, chain validity |
 | 1d | `feat: http headers check` | HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
 
 **Exit criteria:** `python main.py example.com` runs all three checks and prints
