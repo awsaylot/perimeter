@@ -90,25 +90,8 @@ Windows. Users can print to PDF from the HTML report via their browser.
 
 ### Phase 4 — Neo4j integration
 
-| Milestone | Commit message | Description |
-|-----------|---------------|-------------|
-| 4a ✓ | `feat: neo4j schema` | Define node types (`Domain`, `Scan`, `Check`, `Finding`) and relationship types (`HAS_SCAN`, `INCLUDES_CHECK`, `PRODUCED_FINDING`). Schema documented and versioned. |
-| 4b ✓ | `feat: neo4j export` | `--graph` flag writes scan results into Neo4j. Idempotent: re-running a scan updates existing nodes rather than creating duplicates. |
-| 4c ✓ | `feat: historical tracking` | Graph stores every scan run. `--history` shows past scans with severity counts and diffs new/resolved findings vs previous run. |
-
-**Graph schema (draft):**
-```
-(Domain)-[:HAS_SCAN]->(Scan)-[:INCLUDES_CHECK]->(Check)-[:PRODUCED]->(Finding)
-```
-
-- `Domain` — the target (e.g. `example.com`). One node per domain, persists across scans.
-- `Scan` — one node per run, with a timestamp. Links to all checks run in that session.
-- `Check` — one node per check module per scan (DNS, TLS, etc.).
-- `Finding` — one node per finding, with severity, summary, fix, and raw detail.
-
-**Exit criteria:** Running perimeter with `--graph` populates Neo4j. A second run
-against the same domain creates a new `Scan` node and updates the `Domain` node
-without duplication.
+> Extracted to a separate project. Perimeter's `--json` output is the integration
+> point — pipe it into whatever persistence layer you want.
 
 ---
 

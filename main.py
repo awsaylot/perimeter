@@ -82,49 +82,6 @@ def _print_results(result: ScanResult) -> None:
     print()
 
 
-def _print_history(domain: str) -> None:
-    from perimeter.graph.connection import get_driver
-    from perimeter.graph.reader import get_history, get_new_findings, get_resolved_findings
-
-    driver = get_driver()
-    scans = get_history(domain, driver)
-
-    if not scans:
-        print(f"[perimeter] no scan history found for {domain}")
-        driver.close()
-        return
-
-    print(f"\n{_BOLD}[perimeter] scan history for {domain}{_RESET}")
-    print("  " + "-" * 56)
-    for s in scans:
-        ts = s["scanned_at"].strftime("%Y-%m-%d %H:%M UTC") if hasattr(s["scanned_at"], "strftime") else str(s["scanned_at"])
-        high_str   = f"{_COLORS[Severity.HIGH]}{s['high']}H{_RESET}"   if s["high"]   else ""
-        medium_str = f"{_COLORS[Severity.MEDIUM]}{s['medium']}M{_RESET}" if s["medium"] else ""
-        low_str    = f"{_COLORS[Severity.LOW]}{s['low']}L{_RESET}"     if s["low"]    else ""
-        badge_str  = "  ".join(x for x in [high_str, medium_str, low_str] if x) or f"{_COLORS[Severity.PASS]}clean{_RESET}"
-        print(f"  {_DIM}{ts}{_RESET}  {s['total']} findings  {badge_str}  {_DIM}{s['uuid'][:8]}{_RESET}")
-
-    if len(scans) >= 2:
-        new_findings      = get_new_findings(domain, driver)
-        resolved_findings = get_resolved_findings(domain, driver)
-
-        if new_findings:
-            print(f"\n  {_COLORS[Severity.HIGH]}New since last scan:{_RESET}")
-            for f in new_findings:
-                print(f"    {_badge(Severity(f['severity']))} {f['check']} - {f['title']}")
-
-        if resolved_findings:
-            print(f"\n  {_COLORS[Severity.PASS]}Resolved since last scan:{_RESET}")
-            for f in resolved_findings:
-                print(f"    {_badge(Severity(f['severity']))} {f['check']} - {f['title']}")
-
-        if not new_findings and not resolved_findings:
-            print(f"\n  {_DIM}No changes since last scan.{_RESET}")
-
-    print()
-    driver.close()
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="perimeter",
@@ -141,24 +98,8 @@ def main() -> None:
         metavar="FILE",
         help="Write an HTML report to FILE (e.g. report.html)",
     )
-    parser.add_argument(
-        "--graph",
-        action="store_true",
-        help="Write scan results into Neo4j (requires NEO4J_PASSWORD in .env)",
-    )
-    parser.add_argument(
-        "--history",
-        action="store_true",
-        help="Show scan history for the domain from Neo4j (no new scan is run)",
-    )
 
     args = parser.parse_args()
-
-    # --history is read-only — no scan needed
-    if args.history:
-        _print_history(args.domain)
-        return
-
     result = ScanResult(domain=args.domain)
 
     if not args.json:
@@ -174,16 +115,6 @@ def main() -> None:
         print(f"[perimeter] report written to {args.output}")
     else:
         _print_results(result)
-
-    if args.graph:
-        from perimeter.graph.connection import get_driver
-        from perimeter.graph.schema import apply_constraints
-        from perimeter.graph.writer import write_scan
-        driver = get_driver()
-        apply_constraints(driver)
-        write_scan(result, driver)
-        driver.close()
-        print(f"[perimeter] scan {result.uuid[:8]} written to Neo4j")
 
 
 if __name__ == "__main__":
