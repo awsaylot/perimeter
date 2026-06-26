@@ -92,9 +92,9 @@ Windows. Users can print to PDF from the HTML report via their browser.
 
 | Milestone | Commit message | Description |
 |-----------|---------------|-------------|
-| 4a | `feat: neo4j schema` | Define node types (`Domain`, `Scan`, `Check`, `Finding`) and relationship types (`HAS_SCAN`, `INCLUDES_CHECK`, `PRODUCED_FINDING`). Schema documented and versioned. |
-| 4b | `feat: neo4j export` | `--graph` flag writes scan results into Neo4j. Idempotent: re-running a scan updates existing nodes rather than creating duplicates. |
-| 4c | `feat: historical tracking` | Graph stores every scan run. Queries can show what changed between scans — new findings, resolved issues, expiry countdowns. |
+| 4a ✓ | `feat: neo4j schema` | Define node types (`Domain`, `Scan`, `Check`, `Finding`) and relationship types (`HAS_SCAN`, `INCLUDES_CHECK`, `PRODUCED_FINDING`). Schema documented and versioned. |
+| 4b ✓ | `feat: neo4j export` | `--graph` flag writes scan results into Neo4j. Idempotent: re-running a scan updates existing nodes rather than creating duplicates. |
+| 4c ✓ | `feat: historical tracking` | Graph stores every scan run. `--history` shows past scans with severity counts and diffs new/resolved findings vs previous run. |
 
 **Graph schema (draft):**
 ```
